@@ -1,0 +1,37 @@
+{
+  "formatters": {
+    "default": {
+      "datefmt": "%Y-%m-%dT%H:%M:%S",
+      "format": "%(asctime)s - %(process)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)s:%(funcName)s] %(message)s"
+    }
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "formatter": "default",
+      "level": "DEBUG",
+      "stream": "ext://sys.stdout"
+    }
+  },
+  "loggers": {
+    "": {
+      "propagate": true
+    },
+    "gunicorn": {
+      "propagate": true
+    },
+    "uvicorn": {
+      "propagate": true
+    },
+    "uvicorn.access": {
+      "propagate": true
+    }
+  },
+  "root": {
+    "handlers": [
+      "console"
+    ],
+    "level": "DEBUG"
+  },
+  "version": 1
+}

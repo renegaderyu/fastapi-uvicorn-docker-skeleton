@@ -1,0 +1,5 @@
+fastapi>=0.85.0
+pdfkit>=1.0.0
+pydantic>=1.10.2
+structlog>=22.1.0
+uvicorn>=0.18.3
