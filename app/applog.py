@@ -11,24 +11,23 @@ import structlog
 
 LOG_FILENAME = "logging_config.json"
 
-
-def timestamper(_, __, event_dict):
-    """Structlog processors to create timestamps as we wish"""
-    event_dict["@timestamp"] = datetime.now().isoformat()
-    return event_dict
-
+timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%dT%H:%M:%S")
 
 structlog.configure(
     processors=[
         timestamper,
+        # structlog.stdlib.filter_by_level,
+        # structlog.stdlib.add_logger_name,
         structlog.processors.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.StackInfoRenderer(),
         structlog.dev.set_exc_info,
         structlog.processors.format_exc_info,
-        # structlog.processors.JSONRenderer(),
-        structlog.dev.ConsoleRenderer(),
+        structlog.processors.dict_tracebacks,
+        structlog.processors.JSONRenderer(),
+        # structlog.dev.ConsoleRenderer(colors=False),
     ],
-    wrapper_class=structlog.make_filtering_bound_logger(logging.NOTSET),
+    wrapper_class=structlog.stdlib.AsyncBoundLogger,
     context_class=dict,
     logger_factory=structlog.PrintLoggerFactory(),
     cache_logger_on_first_use=False,
@@ -40,7 +39,7 @@ with open(os.path.join(Path(__file__).parent, LOG_FILENAME)) as f:
 logging.config.dictConfig(loaded_config)
 
 
-def _log(msg, level="INFO", **kwargs):
+async def _log(msg, level="INFO", **kwargs):
     temp_logger = structlog.get_logger().bind(**kwargs)
     log_meth = getattr(temp_logger, level.lower(), "info")
-    log_meth(msg)
+    await log_meth(msg)

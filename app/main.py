@@ -3,7 +3,7 @@ from contextvars import ContextVar
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from starlette.background import BackgroundTasks
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
@@ -15,6 +15,11 @@ from app.models import Example
 app = FastAPI()
 app.add_middleware(RequestContextLogMiddleware)
 app.add_middleware(RequestLogEventMiddleware)
+
+
+@app.get("/health")
+async def health():
+    return JSONResponse({"healthy": True})
 
 
 @app.post("/")

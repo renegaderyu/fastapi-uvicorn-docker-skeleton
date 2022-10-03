@@ -43,14 +43,15 @@ class RequestLogEventMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         process_time = (time.time() - start_time) * 1000
         formatted_process_time = "{0:.2f}".format(process_time)
-        _log(
-            "access.log",
-            method=request.method,
-            path=request.url.path,
-            host=request.client.host,
-            completed_in=formatted_process_time,
-            status_code=response.status_code,
-            request_id=response.headers["X-Request-ID"],
-            correlation_id=response.headers["X-Correlation-ID"],
-        )
+        if request.url.path != "/health":
+            await _log(
+                "access.log",
+                method=request.method,
+                path=request.url.path,
+                host=request.client.host,
+                completed_in=formatted_process_time,
+                status_code=response.status_code,
+                request_id=response.headers["X-Request-ID"],
+                correlation_id=response.headers["X-Correlation-ID"],
+            )
         return response
